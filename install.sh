@@ -85,6 +85,31 @@ if [ -f "skills/Stellar-Immigration-Agent-Skill.md" ]; then
     link_item "skills/Stellar-Immigration-Agent-Skill.md" "skills/Stellar-Immigration-Agent-Skill.md"
 fi
 
+# gstack symlinks (mirrors the plugin's convention)
+GSTACK_SKILLS=(browse careful codex design-consultation design-review
+    document-release freeze gstack-upgrade guard investigate office-hours
+    plan-ceo-review plan-design-review plan-eng-review qa qa-only retro
+    review setup-browser-cookies ship unfreeze)
+
+for skill in "${GSTACK_SKILLS[@]}"; do
+    dst="$CLAUDE_DIR/skills/$skill"
+    if [ -L "$dst" ]; then
+        rm "$dst"
+    elif [ -e "$dst" ]; then
+        mkdir -p "$BACKUP_DIR/skills"
+        mv "$dst" "$BACKUP_DIR/skills/$skill"
+        warn "Backed up existing skills/$skill"
+    fi
+    ln -s "gstack/$skill" "$dst"
+    info "Linked skills/$skill -> gstack/$skill"
+done
+
+# Install gstack node_modules if needed
+if [ -d "$SCRIPT_DIR/skills/gstack" ] && [ ! -d "$SCRIPT_DIR/skills/gstack/node_modules" ]; then
+    info "Installing gstack dependencies..."
+    (cd "$SCRIPT_DIR/skills/gstack" && npm install --silent 2>/dev/null) || warn "gstack npm install failed (non-critical)"
+fi
+
 # Memory files
 MEMORY_DIR="$CLAUDE_DIR/projects/-home-duchats/memory"
 mkdir -p "$MEMORY_DIR"
@@ -111,5 +136,6 @@ echo ""
 info "Done. Existing files backed up to: $BACKUP_DIR"
 echo ""
 echo "Note: settings.local.json is machine-specific and not managed by this repo."
-echo "      Plugins (gstack, superpowers, etc.) are installed separately via Claude Code."
+echo "      Superpowers and other plugins are installed separately via Claude Code."
+echo "      gstack is included as a submodule. Run 'git submodule update --remote' to update."
 echo ""

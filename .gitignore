@@ -21,7 +21,6 @@ paste-cache/
 
 # Third-party plugins (installed separately)
 plugins/
-skills/gstack/
 
 # WSL artefacts
 *Zone.Identifier

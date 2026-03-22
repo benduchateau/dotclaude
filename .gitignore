@@ -1,0 +1,31 @@
+# Sensitive / machine-specific
+.credentials.json
+settings.local.json
+
+# Ephemeral
+history.jsonl
+sessions/
+session-env/
+cache/
+debug/
+telemetry/
+file-history/
+shell-snapshots/
+stats-cache.json
+.update.lock
+todos/
+plans/
+backups/
+ide/
+paste-cache/
+
+# Third-party plugins (installed separately)
+plugins/
+skills/gstack/
+
+# WSL artefacts
+*Zone.Identifier
+
+# Python cache
+__pycache__/
+*.pyc

@@ -1,0 +1,49 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/home-hygiene.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/git-status-check.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/openclaw-health.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true,
+    "postman@claude-plugins-official": true,
+    "jdtls-lsp@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "buildwithclaude": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/davepoon/buildwithclaude.git"
+      }
+    },
+    "claude-skills-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "samuelgarrett/claude-code-plugin-test"
+      }
+    }
+  },
+  "effortLevel": "high",
+  "skipDangerousModePermissionPrompt": true,
+  "voiceEnabled": false
+}

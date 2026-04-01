@@ -25,6 +25,18 @@ plugins/
 # WSL artefacts
 *Zone.Identifier
 
-# Python cache
+# Python cache / venvs
 __pycache__/
 *.pyc
+.venv/
+venv/
+node_modules/
+
+# Skill runtime data
+skills/*/data/
+skills/*/browser_state/
+
+# Build artifacts
+dist/
+build/
+.next/

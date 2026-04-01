@@ -41,8 +41,9 @@ When context is ambiguous, default to this priority stack:
 
 ### Brand
 - Primary dark background: `#0A0A0A`
-- Accent gradient: teal `#00D4AA` → blue `#0066FF`
-- Typography: Inter (body), Space Grotesk (headings)
+- Accent: gold `#C4A35A` (CTAs, active states, highlights)
+- Text: warm off-white `#E8E6E1`, secondary `#888888`, muted `#555555`
+- Typography: system UI stack (Geist for CRM, system sans for marketing site)
 - Tone: precise, confident, minimal — no corporate fluff
 
 ### Service model
@@ -89,6 +90,34 @@ When context is ambiguous, default to this priority stack:
 **Project files:** Keep within WSL unless otherwise noted.
 
 **Installed package managers:** npm, pip (`--break-system-packages` always)
+
+### Environment Constraints
+- This is a WSL2 environment. Browser automation (Playwright, CDP) does not work reliably here. Avoid suggesting browser-based tools.
+- `jq` is NOT installed. Use Python for JSON parsing in scripts, not bash+jq.
+- Sandbox restrictions may prevent renaming/moving the current working directory. If needed, tell the user to do it manually.
+
+### Scripts & Tooling
+- Always write utility scripts in Python, never bash. Do not assume jq, fzf, or other CLI tools are available.
+- When writing status bars or hooks, use Python with standard library only.
+
+### Canonical Project Paths
+
+All projects live under `~/projects/`. **Never clone repos to `~/` or create new project directories outside `~/projects/`.** If a project is missing, clone it into `~/projects/` with a clean lowercase name.
+
+| Directory | Repo | Purpose |
+|---|---|---|
+| `~/projects/engineai_website/` | `benduchateau/engineai_website` | Live site at engineai.co.nz (Vercel) |
+| `~/projects/archive/engineai_monorepo/` | `engineai-nz/EngineAI-Home` | Archived org monorepo (dormant) |
+| `~/projects/QCC_website/` | | QCC cleaning website |
+| `~/projects/copilotagent/` | | Copilot Studio agent work |
+| `~/projects/Openclaw/` | | OpenClaw project |
+| `~/projects/piefunds/` | | Pie Funds client work |
+| `~/projects/Project_RFP/` | | 2degrees RFP work |
+
+Before starting work on any project, **check `~/projects/` first**. Do not create a second copy. Do not search for projects in Windows paths or alternate locations.
+
+### Known Issues
+- **Next.js image caching:** Stale images persist after file swaps. After replacing any image file, always clear `.next/cache` and restart the dev server.
 
 ---
 
@@ -174,6 +203,9 @@ Claude Code has no built-in memory. These files are the memory system. Read them
 | `tasks/todo.md` | Active work, current sprint, next actions |
 | `tasks/lessons.md` | Corrections, gotchas, things learned the hard way |
 | `docs/decisions.md` | Architecture and strategic decisions with rationale |
+
+### Session Recovery
+When user says /resume or asks to continue, immediately identify: 1) Which project/file they were last editing, 2) The exact task in progress, 3) Pick up from there. Do NOT give lengthy status briefings unless asked.
 
 **Start of session protocol:**
 1. Read `tasks/todo.md` — know what's in flight

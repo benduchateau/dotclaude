@@ -132,6 +132,19 @@ for file in memory/*; do
     }
 done
 
+# Shell aliases
+ALIAS_SOURCE="source \"$SCRIPT_DIR/shell-aliases.sh\""
+for rcfile in "$HOME/.bashrc" "$HOME/.zshrc"; do
+    if [ -f "$rcfile" ] && ! grep -qF "dotclaude/shell-aliases.sh" "$rcfile"; then
+        echo "" >> "$rcfile"
+        echo "# dotclaude aliases" >> "$rcfile"
+        echo "$ALIAS_SOURCE" >> "$rcfile"
+        info "Added alias source to $(basename "$rcfile")"
+    elif [ -f "$rcfile" ]; then
+        info "$(basename "$rcfile") already sources aliases"
+    fi
+done
+
 echo ""
 info "Done. Existing files backed up to: $BACKUP_DIR"
 echo ""

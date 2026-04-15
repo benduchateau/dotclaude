@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Sync skills from ~/.claude/skills/ to the engineai-skills repo.
+Sync Engine AI skills from ~/.claude/skills/ to the engineai-skills repo.
 
-Copies Engine AI skills (excludes gstack), organises into category
-folders, and commits/pushes if there are changes.
+Uses an allowlist to include only Engine AI skills (not gstack or
+third-party). Organises into category folders and commits/pushes
+if there are changes.
 """
 
 import os
@@ -12,13 +13,11 @@ import subprocess
 import sys
 from pathlib import Path
 
-# Paths
-LIVE_SKILLS = Path.home() / ".claude" / "skills"
 REPO_ROOT = Path(__file__).parent.resolve()
 
-# Category mappings: skill name -> category folder
-# Skills not listed here go to repo root
-CATEGORIES = {
+# Engine AI skills allowlist with category mapping
+# None = repo root (standalone), string = category subfolder
+SKILLS = {
     # GEO suite
     "geo": "geo",
     "geo-audit": "geo",
@@ -49,183 +48,141 @@ CATEGORIES = {
     # Infrastructure
     "openclaw-audit": "infra",
     "unraid-troubleshooter": "infra",
+    # Standalone
+    "brainstorming": None,
+    "brand": None,
+    "file-organizer": None,
+    "humaniser": None,
+    "notebooklm": None,
+    "senior-architect": None,
+    "Stellar-Immigration-Agent-Skill.md": None,
+    "x-voice.skill": None,
 }
 
-# Files/patterns to skip
-SKIP_FILES = {".DS_Store", "Zone.Identifier", "Thumbs.db"}
+SKIP_FILES = {".DS_Store", "Zone.Identifier", "Thumbs.db", "__pycache__"}
+SKIP_DIRS = {".venv", "venv", "node_modules", "__pycache__", ".git"}
 
 
-def is_gstack_skill(skill_path: Path) -> bool:
-    """Check if a skill is from gstack (symlinked SKILL.md or has .tmpl)."""
-    skill_md = skill_path / "SKILL.md"
-    skill_tmpl = skill_path / "SKILL.md.tmpl"
-
-    if skill_tmpl.exists():
-        return True
-    if skill_md.is_symlink():
-        target = str(os.readlink(skill_md))
-        if "gstack" in target:
-            return True
-    return False
-
-
-def get_engine_skills() -> list[str]:
-    """Get list of Engine AI skills (not gstack)."""
-    if not LIVE_SKILLS.exists():
-        print(f"Skills directory not found: {LIVE_SKILLS}")
-        sys.exit(1)
-
-    skills = []
-    for item in sorted(LIVE_SKILLS.iterdir()):
-        name = item.name
-
-        # Skip dotfiles and known junk
-        if name.startswith(".") or any(s in name for s in SKIP_FILES):
-            continue
-
-        # Skip gstack submodule itself
-        if name == "gstack":
-            continue
-
-        # Handle directories
-        if item.is_dir():
-            if is_gstack_skill(item):
-                continue
-            skills.append(name)
-        # Handle standalone files (like Stellar-Immigration-Agent-Skill.md)
-        elif item.is_file() and name.endswith(".md"):
-            skills.append(name)
-
-    return skills
+def find_skills_dir() -> Path:
+    """Find the live skills directory (works on both WSL and Windows)."""
+    # Try WSL path first
+    wsl = Path("/home/duchats/.claude/skills")
+    if wsl.exists():
+        return wsl
+    # Fall back to Windows via Path.home()
+    win = Path.home() / ".claude" / "skills"
+    if win.exists():
+        return win
+    print("Could not find ~/.claude/skills/")
+    sys.exit(1)
 
 
-def sync_skill(name: str) -> bool:
-    """Sync a single skill. Returns True if changes were made."""
-    src = LIVE_SKILLS / name
-    category = CATEGORIES.get(name)
+def sync_item(src: Path, dst: Path) -> bool:
+    """Sync a file or directory. Returns True if changes were made."""
+    if not src.exists():
+        return False
 
-    if category:
-        dst = REPO_ROOT / category / name
-    else:
-        dst = REPO_ROOT / name
-
-    # Ensure parent exists
-    dst.parent.mkdir(parents=True, exist_ok=True)
-
-    # For files (standalone skills)
+    # Single file
     if src.is_file():
+        dst.parent.mkdir(parents=True, exist_ok=True)
         if dst.exists() and src.read_bytes() == dst.read_bytes():
             return False
         shutil.copy2(src, dst)
         return True
 
-    # For directories
-    if not src.is_dir():
-        return False
-
-    # Check if content differs by comparing file trees
+    # Directory
     changed = False
-
-    # Copy new/changed files from source
     for root, dirs, files in os.walk(src):
-        rel_root = Path(root).relative_to(src)
-        dst_dir = dst / rel_root
-        dst_dir.mkdir(parents=True, exist_ok=True)
+        # Prune skipped directories
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
+
+        rel = Path(root).relative_to(src)
+        target_dir = dst / rel
+        target_dir.mkdir(parents=True, exist_ok=True)
 
         for f in files:
             if any(s in f for s in SKIP_FILES):
                 continue
-            src_file = Path(root) / f
-            dst_file = dst_dir / f
+            sf = Path(root) / f
+            df = target_dir / f
 
-            # Skip symlinks that point to gstack
-            if src_file.is_symlink():
-                target = str(os.readlink(src_file))
-                if "gstack" in target:
-                    continue
+            # Skip broken symlinks
+            if sf.is_symlink() and not sf.exists():
+                continue
 
-            if not dst_file.exists():
-                shutil.copy2(src_file, dst_file)
-                changed = True
-            elif src_file.read_bytes() != dst_file.read_bytes():
-                shutil.copy2(src_file, dst_file)
+            if not df.exists() or sf.read_bytes() != df.read_bytes():
+                shutil.copy2(sf, df)
                 changed = True
 
-    # Remove files in dest that no longer exist in source
+    # Remove files in dest no longer in source
     if dst.exists():
-        for root, dirs, files in os.walk(dst):
-            rel_root = Path(root).relative_to(dst)
-            src_dir = src / rel_root
+        for root, _, files in os.walk(dst):
+            rel = Path(root).relative_to(dst)
             for f in files:
-                src_file = src_dir / f
-                if not src_file.exists():
-                    dst_file = Path(root) / f
-                    dst_file.unlink()
+                if not (src / rel / f).exists():
+                    (Path(root) / f).unlink()
                     changed = True
 
     return changed
 
 
-def git_commit_and_push():
-    """Stage, commit, and push if there are changes."""
-    os.chdir(REPO_ROOT)
+def main():
+    live = find_skills_dir()
+    print(f"Source: {live}")
+    print(f"Repo:   {REPO_ROOT}")
 
-    # Check for changes
+    changed = []
+    missing = []
+
+    for name, category in sorted(SKILLS.items()):
+        src = live / name
+
+        if not src.exists():
+            missing.append(name)
+            continue
+
+        if category:
+            dst = REPO_ROOT / category / name
+        else:
+            dst = REPO_ROOT / name
+
+        if sync_item(src, dst):
+            changed.append(name)
+            print(f"  Updated: {name}")
+
+    if missing:
+        print(f"\n  Not found ({len(missing)}): {', '.join(missing)}")
+
+    print(f"\nChanged: {len(changed)}  |  Skipped: {len(SKILLS) - len(changed) - len(missing)}")
+
+    if not changed:
+        print("Everything in sync.")
+        return
+
+    # Git commit and push
+    os.chdir(REPO_ROOT)
+    subprocess.run(["git", "add", "-A"], check=True)
+
     result = subprocess.run(
         ["git", "status", "--porcelain"],
         capture_output=True, text=True
     )
     if not result.stdout.strip():
-        print("No changes to commit.")
+        print("No git changes after staging.")
         return
 
-    # Stage all
-    subprocess.run(["git", "add", "-A"], check=True)
-
-    # Commit
     subprocess.run(
         ["git", "commit", "-m", "Sync skills from live config"],
         check=True
     )
-
-    # Push
-    result = subprocess.run(
+    r = subprocess.run(
         ["git", "push", "origin", "main"],
         capture_output=True, text=True
     )
-    if result.returncode == 0:
+    if r.returncode == 0:
         print("Pushed to origin/main.")
     else:
-        print(f"Push failed: {result.stderr}")
-
-
-def main():
-    print(f"Source: {LIVE_SKILLS}")
-    print(f"Repo:   {REPO_ROOT}")
-    print()
-
-    skills = get_engine_skills()
-    print(f"Found {len(skills)} Engine AI skills (gstack excluded)")
-    print()
-
-    changed = []
-    unchanged = []
-
-    for name in skills:
-        if sync_skill(name):
-            changed.append(name)
-            print(f"  Updated: {name}")
-        else:
-            unchanged.append(name)
-
-    print()
-    print(f"Changed: {len(changed)}  |  Unchanged: {len(unchanged)}")
-
-    if changed:
-        print()
-        git_commit_and_push()
-    else:
-        print("Everything in sync.")
+        print(f"Push failed: {r.stderr}")
 
 
 if __name__ == "__main__":

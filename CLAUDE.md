@@ -41,8 +41,9 @@ When context is ambiguous, default to this priority stack:
 
 ### Brand
 - Primary dark background: `#0A0A0A`
-- Accent gradient: teal `#00D4AA` to blue `#0066FF`
-- Typography: Inter (body), Space Grotesk (headings)
+- Accent: gold `#C4A35A` (CTAs, active states, highlights)
+- Text: warm off-white `#E8E6E1`, secondary `#888888`, muted `#555555`
+- Typography: Inter (body), JetBrains Mono (labels/mono, uppercase wide tracking)
 - Tone: precise, confident, minimal -- no corporate fluff
 
 ### Service model

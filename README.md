@@ -28,14 +28,6 @@ Full suite for optimising websites for AI-powered search engines (ChatGPT, Claud
 | `geo/geo-schema` | Schema.org structured data audit and JSON-LD generation |
 | `geo/geo-technical` | Technical SEO audit with GEO-specific crawlability and SSR checks |
 
-## Design
-
-| Skill | What it does |
-|---|---|
-| `design/brand` | Engine AI visual identity: colours, typography, spacing, components, tone of voice |
-| `design/design-html` | Convert approved AI mockups into production-quality HTML/CSS |
-| `design/design-shotgun` | Generate multiple design variants with comparison board and structured feedback |
-
 ## Session
 
 Session lifecycle management for Claude Code.
@@ -60,7 +52,6 @@ Skills about skills.
 
 | Skill | What it does |
 |---|---|
-| `meta/autoplan` | Auto-review pipeline running CEO, design, and engineering reviews |
 | `meta/autoresearch` | Autonomously optimise skills by running, scoring, and mutating prompts |
 | `meta/skill-creator` | Guide for creating and packaging new Claude Code skills |
 
@@ -76,11 +67,9 @@ Skills about skills.
 | Skill | What it does |
 |---|---|
 | `brainstorming` | Pre-build exploration of intent, requirements, and design before implementation |
-| `connect-chrome` | Launch Chrome with Side Panel extension for live activity tracking |
-| `cso` | Chief Security Officer audit: secrets, supply chain, threat modelling |
+| `brand` | Engine AI visual identity: colours, typography, spacing, components, tone of voice |
 | `file-organizer` | Intelligent file/folder organisation with duplicate detection |
 | `humaniser` | Strip AI writing patterns, apply natural direct voice |
-| `learn` | Manage, review, search, and prune project learnings across sessions |
 | `notebooklm` | Query Google NotebookLM for source-grounded, citation-backed answers |
 | `senior-architect` | System architecture design with diagrams for React, Node, Postgres, Go, Python |
 | `Stellar-Immigration-Agent-Skill` | NZ immigration process for recruiting Filipino skilled workers (AEWV) |

@@ -15,7 +15,7 @@ built for a New Zealand AI consultancy. Every UI decision should feel precise,
 confident, and minimal. No corporate fluff. No generic SaaS aesthetic.
 
 Reference site: engineai.co.nz
-Source repo: `~/projects/engineai_website_copy/`
+Source repo: `~/projects/engineai/website/`
 
 ---
 

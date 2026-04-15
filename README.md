@@ -1,74 +1,112 @@
-# dotclaude
+# Engine AI Skills
 
-Portable Claude Code configuration bundle for Engine AI. Drop this into `~/.claude/` on any machine to replicate the full dev environment, skills, hooks, and memory system.
+Claude Code skills built by [Engine AI](https://engineai.co.nz) for AI orchestration, content optimisation, session management, and infrastructure ops.
 
-## What's Inside
+Drop any skill folder into `~/.claude/skills/` to use it.
 
-```
-CLAUDE.md              # Global operator config (identity, projects, principles)
-settings.json          # Permission rules, model preferences, tool config
-statusline-command.sh  # Custom status bar with project context
-shell-aliases.sh       # Shell aliases (cc for claude-code, etc.)
-install.sh             # One-shot installer
-sync.py                # Sync utility
-hooks/                 # Event-driven hooks (session start, tool calls)
-commands/              # Custom slash commands
-templates/             # Proposal and document templates
-memory/                # Persistent cross-session memory system
-skills/                # Claude Code skills (see below)
-```
+---
 
-## Skills
+## GEO -- Generative Engine Optimisation
 
-### Custom Skills
+Full suite for optimising websites for AI-powered search engines (ChatGPT, Claude, Perplexity, Gemini, Google AI Overviews).
 
-Built for Engine AI workflows and personal infrastructure.
-
-| Skill | Purpose |
+| Skill | What it does |
 |---|---|
-| `brand` | Engine AI visual identity and brand system. Colours, typography, spacing, component patterns, animation, tone of voice, asset references. Source of truth for all Engine AI UI work. |
-| `humaniser` | Strips AI writing patterns and applies a natural, direct voice. Flags em dashes, filler phrases, and corporate padding. |
-| `brainstorming` | Pre-build intent and requirements exploration. Run before any creative or feature work to clarify scope. |
-| `resume` | Start-of-session briefing. Reads memory files, checks Linear/Notion, reviews git state, suggests next actions. |
-| `wrap` | End-of-session cleanup. Updates todos, lessons, decisions. Checks for stray files. |
-| `autoresearch` | Autonomously optimise any Claude Code skill by running it repeatedly, scoring with binary evals, mutating the prompt, and keeping improvements. |
-| `senior-architect` | System architecture design for React, Next.js, Node, Postgres, GraphQL, Go, Python. Architecture diagrams, tech stack decisions, trade-off analysis. |
-| `skill-creator` | Guide for creating and updating Claude Code skills with proper structure and frontmatter. |
-| `file-organizer` | Intelligent file/folder organisation, duplicate detection, and restructuring suggestions. |
-| `openclaw-audit` | Audit the OpenClaw VM against security, health, Docker, and application standards. |
-| `unraid-troubleshooter` | Unraid server diagnostics: array, parity, Docker containers, VMs, plugins, Community Apps. |
-| `notebooklm` | Query Google NotebookLM notebooks from Claude Code for source-grounded, citation-backed answers. |
-| `Stellar-Immigration-Agent-Skill` | NZ immigration process for Stellar Recruitment. AEWV system, visa applications, compliance. |
+| `geo/geo` | Core GEO analysis with citability scoring, crawler checks, and schema audit |
+| `geo/geo-audit` | Full website audit with parallel subagent delegation across all GEO dimensions |
+| `geo/geo-brand-mentions` | Brand mention and authority scanning across AI-referenced platforms |
+| `geo/geo-citability` | Score how likely AI systems are to cite or quote page content (0-100) |
+| `geo/geo-compare` | Monthly delta tracking between baseline and current GEO audits |
+| `geo/geo-content` | Content quality and E-E-A-T assessment for AI citability |
+| `geo/geo-crawlers` | AI crawler access analysis via robots.txt, meta tags, and HTTP headers |
+| `geo/geo-llmstxt` | Generate and validate llms.txt files for AI system discoverability |
+| `geo/geo-platform-optimizer` | Platform-specific optimisation for individual AI search engines |
+| `geo/geo-proposal` | Auto-generate client-ready GEO service proposals from audit data |
+| `geo/geo-prospect` | CRM-lite for managing GEO prospects through the sales pipeline |
+| `geo/geo-report` | Professional client-facing report combining all audit results |
+| `geo/geo-report-pdf` | PDF report generation with score gauges, charts, and action plans |
+| `geo/geo-schema` | Schema.org structured data audit and JSON-LD generation |
+| `geo/geo-technical` | Technical SEO audit with GEO-specific crawlability and SSR checks |
 
-### gstack (Third-Party Toolkit)
+## Design
 
-The `gstack` submodule provides ~30 DevOps, QA, and workflow skills including:
+| Skill | What it does |
+|---|---|
+| `design/brand` | Engine AI visual identity: colours, typography, spacing, components, tone of voice |
+| `design/design-html` | Convert approved AI mockups into production-quality HTML/CSS |
+| `design/design-shotgun` | Generate multiple design variants with comparison board and structured feedback |
 
-- **Browse/QA:** `browse`, `qa`, `qa-only`, `benchmark`, `canary`
-- **Design:** `design-consultation`, `design-review`, `design-shotgun`, `design-html`
-- **Shipping:** `ship`, `review`, `land-and-deploy`, `document-release`
-- **Planning:** `plan-ceo-review`, `plan-eng-review`, `plan-design-review`, `autoplan`
-- **Safety:** `careful`, `freeze`, `unfreeze`, `guard`
-- **Other:** `codex`, `connect-chrome`, `cso`, `investigate`, `office-hours`, `retro`, `learn`
+## Session
 
-## Setup
+Session lifecycle management for Claude Code.
+
+| Skill | What it does |
+|---|---|
+| `session/load-project` | Guided walkthrough for opening a project and getting it running locally |
+| `session/resume` | Start-of-session briefing: memory, git state, next actions |
+| `session/resume-deep` | Comprehensive briefing with full memory review and cross-project scan |
+| `session/wrap` | End-of-session cleanup: update todos, lessons, decisions, check for stray files |
+
+## Review
+
+| Skill | What it does |
+|---|---|
+| `review/adversarial-review` | Dual-agent adversarial review of PRDs, specs, and architecture docs |
+| `review/code-combat` | Multi-round adversarial negotiation between AI agents over build docs |
+
+## Meta
+
+Skills about skills.
+
+| Skill | What it does |
+|---|---|
+| `meta/autoplan` | Auto-review pipeline running CEO, design, and engineering reviews |
+| `meta/autoresearch` | Autonomously optimise skills by running, scoring, and mutating prompts |
+| `meta/skill-creator` | Guide for creating and packaging new Claude Code skills |
+
+## Infrastructure
+
+| Skill | What it does |
+|---|---|
+| `infra/openclaw-audit` | Audit OpenClaw VM against security, health, Docker, and app standards |
+| `infra/unraid-troubleshooter` | Unraid server diagnostics: array, parity, Docker, VMs, plugins |
+
+## Standalone Skills
+
+| Skill | What it does |
+|---|---|
+| `brainstorming` | Pre-build exploration of intent, requirements, and design before implementation |
+| `connect-chrome` | Launch Chrome with Side Panel extension for live activity tracking |
+| `cso` | Chief Security Officer audit: secrets, supply chain, threat modelling |
+| `file-organizer` | Intelligent file/folder organisation with duplicate detection |
+| `humaniser` | Strip AI writing patterns, apply natural direct voice |
+| `learn` | Manage, review, search, and prune project learnings across sessions |
+| `notebooklm` | Query Google NotebookLM for source-grounded, citation-backed answers |
+| `senior-architect` | System architecture design with diagrams for React, Node, Postgres, Go, Python |
+| `Stellar-Immigration-Agent-Skill` | NZ immigration process for recruiting Filipino skilled workers (AEWV) |
+
+---
+
+## Installation
+
+Copy a skill folder into your Claude Code skills directory:
 
 ```bash
-git clone https://github.com/benduchateau/dotclaude.git ~/dotclaude
-cd ~/dotclaude
-./install.sh
+# Single skill
+cp -r geo/geo-audit ~/.claude/skills/geo-audit
+
+# Entire category
+cp -r geo/* ~/.claude/skills/
+
+# Everything
+for dir in */; do
+  [[ -f "$dir/SKILL.md" ]] && cp -r "$dir" ~/.claude/skills/
+  for sub in "$dir"*/; do
+    [[ -f "$sub/SKILL.md" ]] && cp -r "$sub" ~/.claude/skills/
+  done
+done
 ```
 
-Or manually symlink what you need into `~/.claude/`.
+## Built by
 
-## Environment
-
-- WSL2 (Ubuntu) on Windows
-- Claude Code as primary IDE
-- Vercel for deployment
-- Supabase for backend/DB
-- GitHub org: `engineai-nz`
-
-## Who This Is For
-
-Engine AI team members setting up Claude Code with the full skill set, hooks, and configuration. If you're Joe, start here.
+[Engine AI](https://engineai.co.nz) -- AI orchestration consultancy, Auckland, New Zealand.

@@ -1,8 +1,30 @@
-# Engine AI Skills
+# Engine AI dotclaude
 
-Claude Code skills built by [Engine AI](https://engineai.co.nz) for AI orchestration, content optimisation, session management, and infrastructure ops.
+Engine AI's shared Claude Code setup — skills, statusline, hooks, scripts, and settings templates. Used by the Engine AI team to keep their Claude Code environments consistent.
 
-Drop any skill folder into `~/.claude/skills/` to use it.
+## Quick install (full setup)
+
+```bash
+git clone https://github.com/benduchateau/engineai-skills.git ~/engineai-dotclaude
+cd ~/engineai-dotclaude
+./install.sh
+```
+
+The installer copies skills into `~/.claude/skills/`, scripts into `~/.claude/scripts/`, hooks into `~/.claude/hooks/`, and drops in `CLAUDE.md` + `settings.json` templates. Existing files are backed up to `~/.claude/backups/dotclaude-<timestamp>/`.
+
+After install: restart Claude Code and edit `~/.claude/CLAUDE.md` to personalise.
+
+## What's included
+
+- **Skills** — GEO suite, session lifecycle, review, infra, standalone (see below)
+- **Statusline** — Engine AI gold branded Python statusline with model, context %, duration, project, git branch, rate limits
+- **Scripts** — session hooks (home hygiene, git status across projects, wiki sync check, wrap reminder)
+- **Hooks** — auto-format on Edit/Write, bash command audit log, Next.js image cache clear
+- **Templates** — sanitised `CLAUDE.md` and `settings.json` you can personalise
+
+## Skills-only install
+
+Drop any skill folder into `~/.claude/skills/` to use it individually. See the category tables below.
 
 ---
 
@@ -78,23 +100,25 @@ Skills about skills.
 
 ## Installation
 
-Copy a skill folder into your Claude Code skills directory:
+Full setup (recommended): `./install.sh` — see top of this README.
 
-```bash
-# Single skill
-cp -r geo/geo-audit ~/.claude/skills/geo-audit
+Single skill, manual: `cp -r geo/geo-audit ~/.claude/skills/geo-audit`
 
-# Entire category
-cp -r geo/* ~/.claude/skills/
+## Config bundle layout
 
-# Everything
-for dir in */; do
-  [[ -f "$dir/SKILL.md" ]] && cp -r "$dir" ~/.claude/skills/
-  for sub in "$dir"*/; do
-    [[ -f "$sub/SKILL.md" ]] && cp -r "$sub" ~/.claude/skills/
-  done
-done
 ```
+config/
+├── scripts/       # ~/.claude/scripts/  — statusline.py, session-start hooks
+├── hooks/         # ~/.claude/hooks/    — PostToolUse hooks
+└── templates/     # CLAUDE.md + settings.json starter templates
+```
+
+## Opt-in env vars
+
+| Var | What it does |
+|---|---|
+| `OPENCLAW_HOST` | If set (e.g. `user@10.0.0.2`), session-start hook pings an OpenClaw server over SSH. Skipped silently when unset. |
+| `HYGIENE_ALLOWED_DIRS` | Space-separated list of directories expected in `~/`. Defaults to `projects`. |
 
 ## Built by
 

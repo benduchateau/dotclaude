@@ -5,7 +5,7 @@ Engine AI's shared Claude Code setup — skills, statusline, hooks, scripts, and
 ## Quick install (full setup)
 
 ```bash
-git clone https://github.com/benduchateau/engineai-skills.git ~/engineai-dotclaude
+git clone https://github.com/engineai-nz/engineai-skills.git ~/engineai-dotclaude
 cd ~/engineai-dotclaude
 ./install.sh
 ```

@@ -8,7 +8,6 @@ if there are changes.
 """
 
 import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -63,6 +62,48 @@ SKIP_FILES = {".DS_Store", "Zone.Identifier", "Thumbs.db", "__pycache__"}
 SKIP_DIRS = {".venv", "venv", "node_modules", "__pycache__", ".git"}
 
 
+def _is_text(path: Path) -> bool:
+    try:
+        with open(path, "rb") as f:
+            chunk = f.read(8192)
+        if b"\x00" in chunk:
+            return False
+        chunk.decode("utf-8")
+        return True
+    except (UnicodeDecodeError, OSError):
+        return False
+
+
+def _desired_bytes(src: Path) -> bytes:
+    raw = src.read_bytes()
+    if _is_text(src):
+        return raw.replace(b"\r\n", b"\n")
+    return raw
+
+
+def _desired_mode(src: Path, content: bytes) -> int:
+    if _is_text(src) and content.startswith(b"#!"):
+        return 0o755
+    return 0o644
+
+
+def _copy_normalized(src: Path, dst: Path) -> bool:
+    """Copy src to dst with line-ending and mode normalization."""
+    desired = _desired_bytes(src)
+    mode = _desired_mode(src, desired)
+
+    if dst.exists():
+        same_content = dst.read_bytes() == desired
+        same_mode = (dst.stat().st_mode & 0o777) == mode
+        if same_content and same_mode:
+            return False
+
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    dst.write_bytes(desired)
+    dst.chmod(mode)
+    return True
+
+
 def find_skills_dir() -> Path:
     """Find the live skills directory (works on both WSL and Windows)."""
     # Try WSL path first
@@ -84,11 +125,7 @@ def sync_item(src: Path, dst: Path) -> bool:
 
     # Single file
     if src.is_file():
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        if dst.exists() and src.read_bytes() == dst.read_bytes():
-            return False
-        shutil.copy2(src, dst)
-        return True
+        return _copy_normalized(src, dst)
 
     # Directory
     changed = False
@@ -110,8 +147,7 @@ def sync_item(src: Path, dst: Path) -> bool:
             if sf.is_symlink() and not sf.exists():
                 continue
 
-            if not df.exists() or sf.read_bytes() != df.read_bytes():
-                shutil.copy2(sf, df)
+            if _copy_normalized(sf, df):
                 changed = True
 
     # Remove files in dest no longer in source

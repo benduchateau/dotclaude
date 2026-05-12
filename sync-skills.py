@@ -54,6 +54,7 @@ SKILLS = {
     "humaniser": None,
     "notebooklm": None,
     "senior-architect": None,
+    "six-month-vision": None,
     "Stellar-Immigration-Agent-Skill.md": None,
     "x-voice.skill": None,
 }

@@ -1,4 +1,4 @@
-# Engine AI dotclaude
+# Engine AI Claude Skills
 
 Engine AI's shared Claude Code setup — skills, statusline, hooks, scripts, and settings templates. Used by the Engine AI team to keep their Claude Code environments consistent.
 
